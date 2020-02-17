@@ -1,0 +1,54 @@
+﻿<Window x:Class="Homework_14.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Homework_14"
+        
+        mc:Ignorable="d"
+        Title="MainWindow" Height="250" Width="400">
+    <Window.Resources>
+        <local:SalaryToColorConverter x:Key="SalaryToColorConverter"/>
+        <local:ExperienceToMultiplierConverter x:Key="ExperienceToMultiplierConverter"/>
+        <local:ToBonusConverter x:Key="ToBonusConverter"/>
+    </Window.Resources>
+    <DataGrid CanUserDeleteRows="False" AutoGenerateColumns="False"
+              CanUserAddRows="False" GridLinesVisibility="Vertical"
+              ItemsSource="{Binding Employees}"
+              >
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+            <DataGridTextColumn Header="Age" Binding="{Binding Age}"/>
+            <DataGridTextColumn Header="Salary" Binding="{Binding Salary}"/>
+            <DataGridTextColumn Header="Experience" Binding="{Binding Experience}"/>
+            <DataGridTextColumn IsReadOnly="True" Header="Multiplier" Binding="{Binding Experience, Converter={StaticResource ExperienceToMultiplierConverter}}"/>
+            <DataGridTextColumn IsReadOnly="True" Header="Salary with Bonus">
+
+                <DataGridTextColumn.ElementStyle>
+                    
+                    <Style TargetType="{x:Type TextBlock}">
+                        
+                        <Setter Property="Text">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource ToBonusConverter}" >
+                                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}" Path="Item.Salary"/>
+                                    <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}" Path="Item.Experience" Converter="{StaticResource ExperienceToMultiplierConverter}"/>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+
+
+                
+            </DataGridTextColumn>
+            
+
+        </DataGrid.Columns>
+        <DataGrid.RowStyle>
+            <Style TargetType="DataGridRow">
+                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=Item.Salary, Converter={StaticResource SalaryToColorConverter}}"/>
+            </Style>
+        </DataGrid.RowStyle>
+    </DataGrid>
+</Window>
